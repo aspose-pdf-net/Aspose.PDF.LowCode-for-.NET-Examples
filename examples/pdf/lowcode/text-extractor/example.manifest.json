@@ -1,0 +1,19 @@
+{
+  "scenario_id": "pdf-text-extractor",
+  "package_id": "Aspose.PDF",
+  "package_version": "26.4.0",
+  "target_framework": "net8.0",
+  "claimed_symbols": [
+    "Aspose.Pdf.LowCode.TextExtractor",
+    "Aspose.Pdf.LowCode.TextExtractor.Process",
+    "Aspose.Pdf.LowCode.TextExtractorOptions",
+    "Aspose.Pdf.LowCode.FileDataSource",
+    "Aspose.Pdf.LowCode.StringResult"
+  ],
+  "status": "build_run_verified",
+  "input_strategy": "programmatic_input",
+  "input_files": [],
+  "limitation": null,
+  "healing_sprint": "pdf-pilot-api-correctness-healing",
+  "canonical_run": "pilot-pdf-20260505-214804"
+}

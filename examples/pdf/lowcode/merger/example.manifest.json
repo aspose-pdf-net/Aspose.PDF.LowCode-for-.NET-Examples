@@ -1,0 +1,18 @@
+{
+  "scenario_id": "pdf-merger",
+  "package_id": "Aspose.PDF",
+  "package_version": "26.4.0",
+  "target_framework": "net8.0",
+  "claimed_symbols": [
+    "Aspose.Pdf.LowCode.Merger",
+    "Aspose.Pdf.LowCode.Merger.Process",
+    "Aspose.Pdf.LowCode.MergeOptions",
+    "Aspose.Pdf.LowCode.FileDataSource"
+  ],
+  "status": "build_run_verified",
+  "input_strategy": "programmatic_input",
+  "input_files": [],
+  "limitation": null,
+  "healing_sprint": "pdf-pilot-api-correctness-healing",
+  "canonical_run": "pilot-pdf-20260505-214804"
+}
