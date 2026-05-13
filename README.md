@@ -15,7 +15,7 @@ pipeline, validated through dotnet build + runtime execution + output verificati
 here as a repeatable reference.
 
 
-**Controlled pilot scope:** This repository covers Merger, TextExtractor operations.
+**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter operations.
 Broader generation requires resolving open follow-up taskcards first.
 
 
@@ -25,7 +25,8 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `merger` | `Merger.Process` | `2x pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/merger` |
+| `pdfa-converter` | `PdfAConverter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/pdfa-converter` |
+| `splitter` | `Splitter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/splitter` |
 | `text-extractor` | `TextExtractor.Process` | `pdf` | `txt` | `dotnet run --project examples/pdf/lowcode/text-extractor` |
 
 
@@ -87,7 +88,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-06 08:31 UTC
+Generated on: 2026-05-13 15:29 UTC
 
 ---
 
@@ -98,7 +99,8 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── merger/
+│           ├── pdfa-converter/
+│           ├── splitter/
 │           ├── text-extractor/
 │               └── Program.cs
 ├── Directory.Build.props

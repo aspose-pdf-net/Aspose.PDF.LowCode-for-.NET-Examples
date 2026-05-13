@@ -1,0 +1,13 @@
+{
+  "scenario_id": "pdf-splitter",
+  "package_id": "Aspose.PDF",
+  "package_version": "26.4.0",
+  "target_framework": "net8.0",
+  "claimed_symbols": [
+    "Aspose.Pdf.LowCode.Splitter",
+    "Aspose.Pdf.LowCode.Splitter.Process"
+  ],
+  "status": "repaired",
+  "input_strategy": "programmatic_input",
+  "input_files": []
+}
