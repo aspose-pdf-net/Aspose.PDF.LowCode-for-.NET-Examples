@@ -1,0 +1,22 @@
+{
+  "scenario_id": "pdf-optimizer",
+  "package_id": "Aspose.PDF",
+  "package_version": "26.4.0",
+  "target_framework": "net8.0",
+  "claimed_symbols": [
+    "Aspose.Pdf.LowCode.Optimizer",
+    "Aspose.Pdf.LowCode.Optimizer.Process",
+    "Aspose.Pdf.LowCode.OptimizeOptions",
+    "Aspose.Pdf.LowCode.FileDataSource"
+  ],
+  "status": "build_run_verified",
+  "input_strategy": "programmatic_input",
+  "input_files": [],
+  "source_run_id": "pilot-pdf-20260508-155520",
+  "reviewer_passes": 1,
+  "reviewer_pass_run_ids": ["pilot-pdf-20260508-155520"],
+  "reviewer_passes_required": 2,
+  "reviewer_gate_status": "REVIEWER_PASSED_1_OF_2",
+  "live_pr_blocker": "MISSING_APPROVE_LIVE_PR and MISSING_SECOND_REVIEWER_PASS",
+  "agent_code_verification": "PASS — OptimizeOptions + AddInput(FileDataSource) + AddOutput(FileDataSource) + new Optimizer().Process(options) + result.ResultCollection.Count > 0. Build succeeded, run succeeded: output.pdf created."
+}
