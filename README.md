@@ -25,9 +25,7 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `pdfa-converter` | `PdfAConverter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/pdfa-converter` |
-| `splitter` | `Splitter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/splitter` |
-| `text-extractor` | `TextExtractor.Process` | `pdf` | `txt` | `dotnet run --project examples/pdf/lowcode/text-extractor` |
+| `optimizer` | `Optimizer.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/optimizer` |
 
 
 ---
@@ -88,7 +86,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-13 15:29 UTC
+Generated on: 2026-05-14 05:54 UTC
 
 ---
 
@@ -99,9 +97,7 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── pdfa-converter/
-│           ├── splitter/
-│           ├── text-extractor/
+│           ├── optimizer/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
