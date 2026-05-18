@@ -15,7 +15,7 @@ pipeline, validated through dotnet build + runtime execution + output verificati
 here as a repeatable reference.
 
 
-**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter operations.
+**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter, DocConverter, XlsConverter, Html, Jpeg, Png, Tiff, TocGenerator, ImageExtractor, TableGenerator, Security, FormFlattener, FormEditor, FormExporter, Signature operations.
 Broader generation requires resolving open follow-up taskcards first.
 
 
@@ -25,11 +25,92 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `merger` | `Merger.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/merger` |
-| `optimizer` | `Optimizer.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/optimizer` |
-| `pdfa-converter` | `PdfAConverter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/pdfa-converter` |
-| `splitter` | `Splitter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/splitter` |
-| `text-extractor` | `TextExtractor.Process` | `pdf` | `text` | `dotnet run --project examples/pdf/lowcode/text-extractor` |
+| `jpeg` | `Jpeg.Process` | `pdf` | `jpg` | `dotnet run --project examples/pdf/lowcode/jpeg` |
+| `png` | `Png.Process` | `pdf` | `png` | `dotnet run --project examples/pdf/lowcode/png` |
+| `tiff` | `Tiff.Process` | `pdf` | `tiff` | `dotnet run --project examples/pdf/lowcode/tiff` |
+
+
+
+
+---
+
+## Source Code
+
+
+
+<details>
+<summary><code>jpeg/Program.cs</code></summary>
+
+```csharp
+using System;
+using Aspose.Pdf;
+using Aspose.Pdf.LowCode;
+
+var document = new Document();
+document.Pages.Add();
+document.Save("input.pdf");
+
+var options = new JpegOptions();
+options.AddInput(new FileDataSource("input.pdf"));
+options.AddOutput(new FileDataSource("output.jpg"));
+var result = new Jpeg().Process(options);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "JPEG created" : "No output");
+
+```
+
+</details>
+
+
+
+
+<details>
+<summary><code>png/Program.cs</code></summary>
+
+```csharp
+using System;
+using Aspose.Pdf;
+using Aspose.Pdf.LowCode;
+
+var document = new Document();
+document.Pages.Add();
+document.Save("input.pdf");
+
+var options = new PngOptions();
+options.AddInput(new FileDataSource("input.pdf"));
+options.AddOutput(new FileDataSource("output.png"));
+var result = new Png().Process(options);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "PNG created" : "No output");
+
+```
+
+</details>
+
+
+
+
+<details>
+<summary><code>tiff/Program.cs</code></summary>
+
+```csharp
+using System;
+using Aspose.Pdf;
+using Aspose.Pdf.LowCode;
+
+var document = new Document();
+document.Pages.Add();
+document.Save("input.pdf");
+
+var options = new TiffOptions();
+options.AddInput(new FileDataSource("input.pdf"));
+options.AddOutput(new FileDataSource("output.tiff"));
+var result = new Tiff().Process(options);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "TIFF created" : "No output");
+
+```
+
+</details>
+
+
 
 
 ---
@@ -57,7 +138,7 @@ dotnet run --project examples/pdf/lowcode/<example-name>
 ```
 
 Each example is a self-contained .NET project. Running it produces an output file in the project
-directory (e.g., `output.pdf`, `output.xlsx`, `output.html`).
+directory (e.g., `output.jpg`, `output.png`, `output.tiff`).
 
 ---
 
@@ -90,7 +171,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-14 05:54 UTC
+Generated on: 2026-05-18 15:02 UTC
 
 ---
 
@@ -101,15 +182,9 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── merger/
-│           │   └── Program.cs
-│           ├── optimizer/
-│           │   └── Program.cs
-│           ├── pdfa-converter/
-│           │   └── Program.cs
-│           ├── splitter/
-│           │   └── Program.cs
-│           └── text-extractor/
+│           ├── jpeg/
+│           ├── png/
+│           ├── tiff/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
