@@ -15,7 +15,7 @@ pipeline, validated through dotnet build + runtime execution + output verificati
 here as a repeatable reference.
 
 
-**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter operations.
+**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter, DocConverter, XlsConverter, Html, Jpeg, Png, Tiff, TocGenerator, ImageExtractor, TableGenerator, Security, FormFlattener, FormEditor, FormExporter, Signature operations.
 Broader generation requires resolving open follow-up taskcards first.
 
 
@@ -25,11 +25,59 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `merger` | `Merger.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/merger` |
-| `optimizer` | `Optimizer.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/optimizer` |
-| `pdfa-converter` | `PdfAConverter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/pdfa-converter` |
-| `splitter` | `Splitter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/splitter` |
-| `text-extractor` | `TextExtractor.Process` | `pdf` | `text` | `dotnet run --project examples/pdf/lowcode/text-extractor` |
+| `signature` | `Signature.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/signature` |
+
+
+
+
+---
+
+## Source Code
+
+
+
+<details>
+<summary><code>signature/Program.cs</code></summary>
+
+```csharp
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using Aspose.Pdf;
+using Aspose.Pdf.LowCode;
+using Aspose.Pdf.Text;
+
+// Create self-signed PFX fixture (no TSA/CA server required)
+using var rsa = RSA.Create(2048);
+var req = new CertificateRequest("cn=TestSign", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+req.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
+var cert = req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+var pfxBytes = cert.Export(X509ContentType.Pfx, "testpassword");
+File.WriteAllBytes("test.pfx", pfxBytes);
+
+// Create PDF input fixture
+var doc = new Document();
+var page = doc.Pages.Add();
+page.Paragraphs.Add(new TextFragment("Document for digital signing"));
+doc.Save("input.pdf");
+
+// Apply digital signature using Signature LowCode plugin
+var signOptions = new SignOptions("test.pfx", "testpassword");
+signOptions.PageNumber = 1;
+signOptions.Reason = "Authorized Signature";
+signOptions.Contact = "signatory@example.com";
+signOptions.Location = "Document Processing";
+signOptions.AddInput(new FileDataSource("input.pdf"));
+signOptions.AddOutput(new FileDataSource("output.pdf"));
+var result = new Signature().Process(signOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "PDF signed successfully." : "No output produced.");
+
+```
+
+</details>
+
+
 
 
 ---
@@ -37,7 +85,7 @@ Broader generation requires resolving open follow-up taskcards first.
 ## Requirements
 
 - .NET 8+ (target framework: `net8.0`)
-- NuGet package: [`Aspose.PDF`](https://www.nuget.org/packages/Aspose.PDF) v26.4.0
+- NuGet package: [`Aspose.PDF`](https://www.nuget.org/packages/Aspose.PDF) v26.5.0
 
 ---
 
@@ -57,7 +105,7 @@ dotnet run --project examples/pdf/lowcode/<example-name>
 ```
 
 Each example is a self-contained .NET project. Running it produces an output file in the project
-directory (e.g., `output.pdf`, `output.xlsx`, `output.html`).
+directory (e.g., `output.pdf`).
 
 ---
 
@@ -90,7 +138,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-14 05:54 UTC
+Generated on: 2026-05-18 15:04 UTC
 
 ---
 
@@ -101,15 +149,7 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── merger/
-│           │   └── Program.cs
-│           ├── optimizer/
-│           │   └── Program.cs
-│           ├── pdfa-converter/
-│           │   └── Program.cs
-│           ├── splitter/
-│           │   └── Program.cs
-│           └── text-extractor/
+│           ├── signature/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
