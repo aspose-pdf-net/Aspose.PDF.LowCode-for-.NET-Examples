@@ -15,7 +15,7 @@ pipeline, validated through dotnet build + runtime execution + output verificati
 here as a repeatable reference.
 
 
-**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter operations.
+**Controlled pilot scope:** This repository covers Merger, TextExtractor, Splitter, Optimizer, PdfAConverter, DocConverter, XlsConverter, Html, Jpeg, Png, Tiff, TocGenerator, ImageExtractor, TableGenerator, Security, FormFlattener, FormEditor, FormExporter, Signature operations.
 Broader generation requires resolving open follow-up taskcards first.
 
 
@@ -25,11 +25,76 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `merger` | `Merger.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/merger` |
-| `optimizer` | `Optimizer.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/optimizer` |
-| `pdfa-converter` | `PdfAConverter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/pdfa-converter` |
-| `splitter` | `Splitter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/splitter` |
-| `text-extractor` | `TextExtractor.Process` | `pdf` | `text` | `dotnet run --project examples/pdf/lowcode/text-extractor` |
+| `form-editor` | `FormEditor.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/form-editor` |
+| `form-exporter` | `FormExporter.Process` | `pdf` | `json` | `dotnet run --project examples/pdf/lowcode/form-exporter` |
+
+
+
+
+---
+
+## Source Code
+
+
+
+<details>
+<summary><code>form-editor/Program.cs</code></summary>
+
+```csharp
+using System;
+using Aspose.Pdf;
+using Aspose.Pdf.LowCode;
+using Aspose.Pdf.Forms;
+
+var doc = new Document();
+var page = doc.Pages.Add();
+var textBox = new TextBoxField(page, new Aspose.Pdf.Rectangle(100, 700, 300, 730));
+textBox.PartialName = "TextField1";
+textBox.Value = "Hello AcroForm";
+doc.Form.Add(textBox, 1);
+doc.Save("input.pdf");
+
+var removeOptions = new FormRemoveAllFieldsOptions();
+removeOptions.AddInput(new FileDataSource("input.pdf"));
+removeOptions.AddOutput(new FileDataSource("output.pdf"));
+var result = new FormEditor().Process(removeOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Form fields removed" : "No output");
+
+```
+
+</details>
+
+
+
+
+<details>
+<summary><code>form-exporter/Program.cs</code></summary>
+
+```csharp
+using System;
+using Aspose.Pdf;
+using Aspose.Pdf.LowCode;
+using Aspose.Pdf.Forms;
+
+var doc = new Document();
+var page = doc.Pages.Add();
+var textBox = new TextBoxField(page, new Aspose.Pdf.Rectangle(100, 700, 300, 730));
+textBox.PartialName = "TextField1";
+textBox.Value = "ExportedValue";
+doc.Form.Add(textBox, 1);
+doc.Save("input.pdf");
+
+var exportOptions = new FormExporterToJsonOptions();
+exportOptions.AddInput(new FileDataSource("input.pdf"));
+exportOptions.AddOutput(new FileDataSource("output.json"));
+var result = new FormExporter().Process(exportOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Form exported to JSON" : "No output");
+
+```
+
+</details>
+
+
 
 
 ---
@@ -37,7 +102,7 @@ Broader generation requires resolving open follow-up taskcards first.
 ## Requirements
 
 - .NET 8+ (target framework: `net8.0`)
-- NuGet package: [`Aspose.PDF`](https://www.nuget.org/packages/Aspose.PDF) v26.4.0
+- NuGet package: [`Aspose.PDF`](https://www.nuget.org/packages/Aspose.PDF) v26.5.0
 
 ---
 
@@ -57,7 +122,7 @@ dotnet run --project examples/pdf/lowcode/<example-name>
 ```
 
 Each example is a self-contained .NET project. Running it produces an output file in the project
-directory (e.g., `output.pdf`, `output.xlsx`, `output.html`).
+directory (e.g., `output.json`, `output.pdf`).
 
 ---
 
@@ -90,7 +155,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-14 05:54 UTC
+Generated on: 2026-05-18 15:04 UTC
 
 ---
 
@@ -101,15 +166,8 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── merger/
-│           │   └── Program.cs
-│           ├── optimizer/
-│           │   └── Program.cs
-│           ├── pdfa-converter/
-│           │   └── Program.cs
-│           ├── splitter/
-│           │   └── Program.cs
-│           └── text-extractor/
+│           ├── form-editor/
+│           ├── form-exporter/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
