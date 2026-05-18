@@ -25,7 +25,11 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
+| `merger` | `Merger.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/merger` |
 | `optimizer` | `Optimizer.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/optimizer` |
+| `pdfa-converter` | `PdfAConverter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/pdfa-converter` |
+| `splitter` | `Splitter.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/splitter` |
+| `text-extractor` | `TextExtractor.Process` | `pdf` | `text` | `dotnet run --project examples/pdf/lowcode/text-extractor` |
 
 
 ---
@@ -97,7 +101,15 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
+│           ├── merger/
+│           │   └── Program.cs
 │           ├── optimizer/
+│           │   └── Program.cs
+│           ├── pdfa-converter/
+│           │   └── Program.cs
+│           ├── splitter/
+│           │   └── Program.cs
+│           └── text-extractor/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
