@@ -25,8 +25,7 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `form-editor` | `FormEditor.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/form-editor` |
-| `form-exporter` | `FormExporter.Process` | `pdf` | `json` | `dotnet run --project examples/pdf/lowcode/form-exporter` |
+| `signature` | `Signature.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/signature` |
 
 
 
@@ -38,57 +37,41 @@ Broader generation requires resolving open follow-up taskcards first.
 
 
 <details>
-<summary><code>form-editor/Program.cs</code></summary>
+<summary><code>signature/Program.cs</code></summary>
 
 ```csharp
 using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
-using Aspose.Pdf.Forms;
+using Aspose.Pdf.Text;
 
+// Create self-signed PFX fixture (no TSA/CA server required)
+using var rsa = RSA.Create(2048);
+var req = new CertificateRequest("cn=TestSign", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+req.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
+var cert = req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+var pfxBytes = cert.Export(X509ContentType.Pfx, "testpassword");
+File.WriteAllBytes("test.pfx", pfxBytes);
+
+// Create PDF input fixture
 var doc = new Document();
 var page = doc.Pages.Add();
-var textBox = new TextBoxField(page, new Aspose.Pdf.Rectangle(100, 700, 300, 730));
-textBox.PartialName = "TextField1";
-textBox.Value = "Hello AcroForm";
-doc.Form.Add(textBox, 1);
+page.Paragraphs.Add(new TextFragment("Document for digital signing"));
 doc.Save("input.pdf");
 
-var removeOptions = new FormRemoveAllFieldsOptions();
-removeOptions.AddInput(new FileDataSource("input.pdf"));
-removeOptions.AddOutput(new FileDataSource("output.pdf"));
-var result = new FormEditor().Process(removeOptions);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "Form fields removed" : "No output");
-
-```
-
-</details>
-
-
-
-
-<details>
-<summary><code>form-exporter/Program.cs</code></summary>
-
-```csharp
-using System;
-using Aspose.Pdf;
-using Aspose.Pdf.LowCode;
-using Aspose.Pdf.Forms;
-
-var doc = new Document();
-var page = doc.Pages.Add();
-var textBox = new TextBoxField(page, new Aspose.Pdf.Rectangle(100, 700, 300, 730));
-textBox.PartialName = "TextField1";
-textBox.Value = "ExportedValue";
-doc.Form.Add(textBox, 1);
-doc.Save("input.pdf");
-
-var exportOptions = new FormExporterToJsonOptions();
-exportOptions.AddInput(new FileDataSource("input.pdf"));
-exportOptions.AddOutput(new FileDataSource("output.json"));
-var result = new FormExporter().Process(exportOptions);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "Form exported to JSON" : "No output");
+// Apply digital signature using Signature LowCode plugin
+var signOptions = new SignOptions("test.pfx", "testpassword");
+signOptions.PageNumber = 1;
+signOptions.Reason = "Authorized Signature";
+signOptions.Contact = "signatory@example.com";
+signOptions.Location = "Document Processing";
+signOptions.AddInput(new FileDataSource("input.pdf"));
+signOptions.AddOutput(new FileDataSource("output.pdf"));
+var result = new Signature().Process(signOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "PDF signed successfully." : "No output produced.");
 
 ```
 
@@ -122,7 +105,7 @@ dotnet run --project examples/pdf/lowcode/<example-name>
 ```
 
 Each example is a self-contained .NET project. Running it produces an output file in the project
-directory (e.g., `output.json`, `output.pdf`).
+directory (e.g., `output.pdf`).
 
 ---
 
@@ -166,8 +149,7 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── form-editor/
-│           ├── form-exporter/
+│           ├── signature/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
