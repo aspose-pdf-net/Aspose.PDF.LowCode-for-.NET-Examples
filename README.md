@@ -25,9 +25,8 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `image-extractor` | `ImageExtractor.Process` | `pdf` | `` | `dotnet run --project examples/pdf/lowcode/image-extractor` |
-| `table-generator` | `TableGenerator.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/table-generator` |
-| `toc-generator` | `TocGenerator.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/toc-generator` |
+| `form-flattener` | `FormFlattener.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/form-flattener` |
+| `security` | `Security.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/security` |
 
 
 
@@ -39,31 +38,27 @@ Broader generation requires resolving open follow-up taskcards first.
 
 
 <details>
-<summary><code>image-extractor/Program.cs</code></summary>
+<summary><code>form-flattener/Program.cs</code></summary>
 
 ```csharp
 using System;
-using System.IO;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
+using Aspose.Pdf.Forms;
 
-// Minimal 1x1 red pixel BMP (58 bytes) as fixture image
-var bmpBytes = new byte[] {
-    66, 77, 58, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0,
-    40, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24, 0,
-    0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 255, 0
-};
-var document = new Document();
-var page = document.Pages.Add();
-page.Resources.Images.Add(new MemoryStream(bmpBytes));
-document.Save("input.pdf");
+var doc = new Document();
+var page = doc.Pages.Add();
+var textBox = new TextBoxField(page, new Aspose.Pdf.Rectangle(100, 700, 300, 730));
+textBox.PartialName = "TextField1";
+textBox.Value = "Hello AcroForm";
+doc.Form.Add(textBox, 1);
+doc.Save("input.pdf");
 
-var options = new ImageExtractorOptions();
-options.AddInput(new FileDataSource("input.pdf"));
-var result = new ImageExtractor().Process(options);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "Images extracted" : "No images found");
+var flattenOptions = new FormFlattenAllFieldsOptions();
+flattenOptions.AddInput(new FileDataSource("input.pdf"));
+flattenOptions.AddOutput(new FileDataSource("output.pdf"));
+var result = new FormFlattener().Process(flattenOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Form flattened" : "No output");
 
 ```
 
@@ -73,64 +68,26 @@ Console.WriteLine(result.ResultCollection.Count > 0 ? "Images extracted" : "No i
 
 
 <details>
-<summary><code>table-generator/Program.cs</code></summary>
+<summary><code>security/Program.cs</code></summary>
 
 ```csharp
 using System;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
-using Aspose.Pdf.Text;
+using Aspose.Pdf.Facades;
 
 var doc = new Document();
 doc.Pages.Add();
 doc.Save("input.pdf");
 
-var options = TableOptions.Create()
-    .InsertPageBefore(1);
+DocumentPrivilege privilege = DocumentPrivilege.ForbidAll;
+privilege.AllowPrint = true;
 
-options.AddTable()
-    .AddRow()
-        .AddCell()
-            .AddParagraph(new TextFragment("Header 1"))
-        .AddCell()
-            .AddParagraph(new TextFragment("Header 2"))
-    .AddRow()
-        .AddCell()
-            .AddParagraph(new TextFragment("Cell 1"))
-        .AddCell()
-            .AddParagraph(new TextFragment("Cell 2"));
-
-options.AddInput(new FileDataSource("input.pdf"));
-options.AddOutput(new FileDataSource("output.pdf"));
-
-var plugin = new TableGenerator();
-var result = plugin.Process(options);
-
-Console.WriteLine(result.ResultCollection.Count > 0 ? "Table added" : "No output");
-```
-
-</details>
-
-
-
-
-<details>
-<summary><code>toc-generator/Program.cs</code></summary>
-
-```csharp
-using System;
-using Aspose.Pdf;
-using Aspose.Pdf.LowCode;
-
-var document = new Document();
-document.Pages.Add();
-document.Save("input.pdf");
-
-var options = new TocOptions();
-options.AddInput(new FileDataSource("input.pdf"));
-options.AddOutput(new FileDataSource("output.pdf"));
-var result = new TocGenerator().Process(options);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "TOC added" : "No output");
+var encOptions = new EncryptionOptions("owner123", "user123", privilege);
+encOptions.AddInput(new FileDataSource("input.pdf"));
+encOptions.AddOutput(new FileDataSource("output.pdf"));
+var result = new Security().Process(encOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "PDF encrypted" : "No output");
 
 ```
 
@@ -144,7 +101,7 @@ Console.WriteLine(result.ResultCollection.Count > 0 ? "TOC added" : "No output")
 ## Requirements
 
 - .NET 8+ (target framework: `net8.0`)
-- NuGet package: [`Aspose.PDF`](https://www.nuget.org/packages/Aspose.PDF) v26.4.0
+- NuGet package: [`Aspose.PDF`](https://www.nuget.org/packages/Aspose.PDF) v26.5.0
 
 ---
 
@@ -208,9 +165,8 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── image-extractor/
-│           ├── table-generator/
-│           ├── toc-generator/
+│           ├── form-flattener/
+│           ├── security/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
