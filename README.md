@@ -25,8 +25,8 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `form-flattener` | `FormFlattener.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/form-flattener` |
-| `security` | `Security.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/security` |
+| `form-editor` | `FormEditor.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/form-editor` |
+| `form-exporter` | `FormExporter.Process` | `pdf` | `json` | `dotnet run --project examples/pdf/lowcode/form-exporter` |
 
 
 
@@ -38,7 +38,7 @@ Broader generation requires resolving open follow-up taskcards first.
 
 
 <details>
-<summary><code>form-flattener/Program.cs</code></summary>
+<summary><code>form-editor/Program.cs</code></summary>
 
 ```csharp
 using System;
@@ -54,11 +54,11 @@ textBox.Value = "Hello AcroForm";
 doc.Form.Add(textBox, 1);
 doc.Save("input.pdf");
 
-var flattenOptions = new FormFlattenAllFieldsOptions();
-flattenOptions.AddInput(new FileDataSource("input.pdf"));
-flattenOptions.AddOutput(new FileDataSource("output.pdf"));
-var result = new FormFlattener().Process(flattenOptions);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "Form flattened" : "No output");
+var removeOptions = new FormRemoveAllFieldsOptions();
+removeOptions.AddInput(new FileDataSource("input.pdf"));
+removeOptions.AddOutput(new FileDataSource("output.pdf"));
+var result = new FormEditor().Process(removeOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Form fields removed" : "No output");
 
 ```
 
@@ -68,26 +68,27 @@ Console.WriteLine(result.ResultCollection.Count > 0 ? "Form flattened" : "No out
 
 
 <details>
-<summary><code>security/Program.cs</code></summary>
+<summary><code>form-exporter/Program.cs</code></summary>
 
 ```csharp
 using System;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
-using Aspose.Pdf.Facades;
+using Aspose.Pdf.Forms;
 
 var doc = new Document();
-doc.Pages.Add();
+var page = doc.Pages.Add();
+var textBox = new TextBoxField(page, new Aspose.Pdf.Rectangle(100, 700, 300, 730));
+textBox.PartialName = "TextField1";
+textBox.Value = "ExportedValue";
+doc.Form.Add(textBox, 1);
 doc.Save("input.pdf");
 
-DocumentPrivilege privilege = DocumentPrivilege.ForbidAll;
-privilege.AllowPrint = true;
-
-var encOptions = new EncryptionOptions("owner123", "user123", privilege);
-encOptions.AddInput(new FileDataSource("input.pdf"));
-encOptions.AddOutput(new FileDataSource("output.pdf"));
-var result = new Security().Process(encOptions);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "PDF encrypted" : "No output");
+var exportOptions = new FormExporterToJsonOptions();
+exportOptions.AddInput(new FileDataSource("input.pdf"));
+exportOptions.AddOutput(new FileDataSource("output.json"));
+var result = new FormExporter().Process(exportOptions);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Form exported to JSON" : "No output");
 
 ```
 
@@ -121,7 +122,7 @@ dotnet run --project examples/pdf/lowcode/<example-name>
 ```
 
 Each example is a self-contained .NET project. Running it produces an output file in the project
-directory (e.g., `output.pdf`).
+directory (e.g., `output.json`, `output.pdf`).
 
 ---
 
@@ -154,7 +155,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-19 05:51 UTC
+Generated on: 2026-05-19 05:52 UTC
 
 ---
 
@@ -165,8 +166,8 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── form-flattener/
-│           ├── security/
+│           ├── form-editor/
+│           ├── form-exporter/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
