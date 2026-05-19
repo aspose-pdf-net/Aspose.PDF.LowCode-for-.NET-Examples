@@ -25,9 +25,9 @@ Broader generation requires resolving open follow-up taskcards first.
 
 | Example | Demonstrated API | Input | Output | Run |
 |---------|-----------------|-------|--------|-----|
-| `jpeg` | `Jpeg.Process` | `pdf` | `jpg` | `dotnet run --project examples/pdf/lowcode/jpeg` |
-| `png` | `Png.Process` | `pdf` | `png` | `dotnet run --project examples/pdf/lowcode/png` |
-| `tiff` | `Tiff.Process` | `pdf` | `tiff` | `dotnet run --project examples/pdf/lowcode/tiff` |
+| `image-extractor` | `ImageExtractor.Process` | `pdf` | `` | `dotnet run --project examples/pdf/lowcode/image-extractor` |
+| `table-generator` | `TableGenerator.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/table-generator` |
+| `toc-generator` | `TocGenerator.Process` | `pdf` | `pdf` | `dotnet run --project examples/pdf/lowcode/toc-generator` |
 
 
 
@@ -39,22 +39,31 @@ Broader generation requires resolving open follow-up taskcards first.
 
 
 <details>
-<summary><code>jpeg/Program.cs</code></summary>
+<summary><code>image-extractor/Program.cs</code></summary>
 
 ```csharp
 using System;
+using System.IO;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
 
+// Minimal 1x1 red pixel BMP (58 bytes) as fixture image
+var bmpBytes = new byte[] {
+    66, 77, 58, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0,
+    40, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24, 0,
+    0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 255, 0
+};
 var document = new Document();
-document.Pages.Add();
+var page = document.Pages.Add();
+page.Resources.Images.Add(new MemoryStream(bmpBytes));
 document.Save("input.pdf");
 
-var options = new JpegOptions();
+var options = new ImageExtractorOptions();
 options.AddInput(new FileDataSource("input.pdf"));
-options.AddOutput(new FileDataSource("output.jpg"));
-var result = new Jpeg().Process(options);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "JPEG created" : "No output");
+var result = new ImageExtractor().Process(options);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Images extracted" : "No images found");
 
 ```
 
@@ -64,23 +73,40 @@ Console.WriteLine(result.ResultCollection.Count > 0 ? "JPEG created" : "No outpu
 
 
 <details>
-<summary><code>png/Program.cs</code></summary>
+<summary><code>table-generator/Program.cs</code></summary>
 
 ```csharp
 using System;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
+using Aspose.Pdf.Text;
 
-var document = new Document();
-document.Pages.Add();
-document.Save("input.pdf");
+var doc = new Document();
+doc.Pages.Add();
+doc.Save("input.pdf");
 
-var options = new PngOptions();
+var options = TableOptions.Create()
+    .InsertPageBefore(1);
+
+options.AddTable()
+    .AddRow()
+        .AddCell()
+            .AddParagraph(new TextFragment("Header 1"))
+        .AddCell()
+            .AddParagraph(new TextFragment("Header 2"))
+    .AddRow()
+        .AddCell()
+            .AddParagraph(new TextFragment("Cell 1"))
+        .AddCell()
+            .AddParagraph(new TextFragment("Cell 2"));
+
 options.AddInput(new FileDataSource("input.pdf"));
-options.AddOutput(new FileDataSource("output.png"));
-var result = new Png().Process(options);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "PNG created" : "No output");
+options.AddOutput(new FileDataSource("output.pdf"));
 
+var plugin = new TableGenerator();
+var result = plugin.Process(options);
+
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Table added" : "No output");
 ```
 
 </details>
@@ -89,7 +115,7 @@ Console.WriteLine(result.ResultCollection.Count > 0 ? "PNG created" : "No output
 
 
 <details>
-<summary><code>tiff/Program.cs</code></summary>
+<summary><code>toc-generator/Program.cs</code></summary>
 
 ```csharp
 using System;
@@ -100,11 +126,11 @@ var document = new Document();
 document.Pages.Add();
 document.Save("input.pdf");
 
-var options = new TiffOptions();
+var options = new TocOptions();
 options.AddInput(new FileDataSource("input.pdf"));
-options.AddOutput(new FileDataSource("output.tiff"));
-var result = new Tiff().Process(options);
-Console.WriteLine(result.ResultCollection.Count > 0 ? "TIFF created" : "No output");
+options.AddOutput(new FileDataSource("output.pdf"));
+var result = new TocGenerator().Process(options);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "TOC added" : "No output");
 
 ```
 
@@ -138,7 +164,7 @@ dotnet run --project examples/pdf/lowcode/<example-name>
 ```
 
 Each example is a self-contained .NET project. Running it produces an output file in the project
-directory (e.g., `output.jpg`, `output.png`, `output.tiff`).
+directory (e.g., `output.pdf`).
 
 ---
 
@@ -171,7 +197,7 @@ These examples are validated by the pipeline before publishing:
 | Example reviewer gate | PASS |
 | Gate verdict | `PR_DRY_RUN_READY` |
 
-Generated on: 2026-05-19 05:49 UTC
+Generated on: 2026-05-19 05:51 UTC
 
 ---
 
@@ -182,9 +208,9 @@ Aspose.PDF.LowCode-for-.NET-Examples/
 ├── examples/
 │   └── pdf/
 │       └── lowcode/
-│           ├── jpeg/
-│           ├── png/
-│           ├── tiff/
+│           ├── image-extractor/
+│           ├── table-generator/
+│           ├── toc-generator/
 │               └── Program.cs
 ├── Directory.Build.props
 ├── Directory.Packages.props
