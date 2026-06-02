@@ -1,47 +1,21 @@
 using System;
-using System.IO;
 using Aspose.Pdf;
 using Aspose.Pdf.LowCode;
+using Aspose.Pdf.Text;
 
-namespace MergerExample
-{
-    class Program
-    {
-        static void Main()
-        {
-            // Prepare file paths
-            string inputPath = Path.Combine(Directory.GetCurrentDirectory(), "input.pdf");
-            string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "output.pdf");
+var document1 = new Document();
+var page1 = document1.Pages.Add();
+page1.Paragraphs.Add(new TextFragment("Document 1 - Page 1"));
+document1.Save("input1.pdf");
 
-            // Create a simple PDF document as input
-            var doc = new Document();
-            doc.Pages.Add();
-            doc.Save(inputPath);
+var document2 = new Document();
+var page2 = document2.Pages.Add();
+page2.Paragraphs.Add(new TextFragment("Document 2 - Page 1"));
+document2.Save("input2.pdf");
 
-            // Validate input file exists and is non‑empty
-            if (!File.Exists(inputPath) || new FileInfo(inputPath).Length == 0)
-            {
-                Console.WriteLine("Input file validation failed.");
-                return;
-            }
-
-            // Set up merge options
-            var options = new MergeOptions();
-            options.AddInput(new FileDataSource(inputPath));
-            options.AddOutput(new FileDataSource(outputPath));
-
-            // Execute the merge process
-            var result = new Merger().Process(options);
-
-            // Check for successful result and validate output file
-            if (result?.ResultCollection?.Count > 0 && File.Exists(outputPath))
-            {
-                Console.WriteLine($"Merge succeeded: {outputPath}");
-            }
-            else
-            {
-                Console.WriteLine("Merge failed.");
-            }
-        }
-    }
-}
+var options = new MergeOptions();
+options.AddInput(new FileDataSource("input1.pdf"));
+options.AddInput(new FileDataSource("input2.pdf"));
+options.AddOutput(new FileDataSource("output.pdf"));
+var result = new Merger().Process(options);
+Console.WriteLine(result.ResultCollection.Count > 0 ? "Merged successfully" : "No output");
